@@ -1,10 +1,10 @@
-X, = empty space.
+X = empty space.
 
-O, = impassable rocks.
+O = impassable rocks.
 
-P, = The player's initial spawn.
+P = The player's initial spawn.
 
-D, = Door. 
+D = Door. 
 
 E = enemy.
 
