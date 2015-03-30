@@ -1,3 +1,5 @@
+namespace DelveCodeB
+{
 /// <summary>
     /// This is the main type for your game
     /// </summary>
@@ -365,3 +367,4 @@
             base.Draw(gameTime);
         }
     }
+}
