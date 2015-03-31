@@ -1,0 +1,13 @@
+X = empty space.
+
+O = impassable rocks.
+
+P = The player's initial spawn.
+
+D = Door. 
+
+E = enemy.
+
+U = Ladder down/ stairs down whatever.
+
+W = Weapon.
