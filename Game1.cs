@@ -304,12 +304,12 @@ namespace DelveCodeB
                 location.X = graphics.PreferredBackBufferWidth - 85;
                 weaponLocation.X = location.X - 10;
             }
-            if(location.Y >= graphics.PreferredBackBufferHeight - 85)
+            if(location.Y >= graphics.PreferredBackBufferHeight - 65)
             {
-                location.Y = graphics.PreferredBackBufferHeight - 90;
+                location.Y = graphics.PreferredBackBufferHeight - 70;
                // weaponLocation.Y = location.Y - 5;
             }
-            if(weaponLocation.Y >= graphics.PreferredBackBufferHeight - 90)
+            if(weaponLocation.Y >= graphics.PreferredBackBufferHeight - 70)
             {
                 weaponLocation.Y -= 5; 
             }
