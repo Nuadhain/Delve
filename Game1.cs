@@ -257,16 +257,16 @@ namespace DelveCodeB
                 for(int j = 0; j < 25;j++)
                 {
                    Rectangle door1 = new Rectangle(i * 50, j * 25, 50, 50);
-                   if(mapFile.roomXY[i,j] == 'D')
+                   if(mapFile.roomChars[i,j] == 'D')
                    {
                        spriteBatch.Draw(doors[0], door1 ,Color.White);
                       
                    }
-                   if(mapFile.roomXY[i,j] == 'P')
+                   if(mapFile.roomChars[i,j] == 'P')
                    {
                        spriteBatch.Draw(playerAvatar, location, Color.White);
                    }
-                   if(mapFile.roomXY[i,j] == 'E')
+                   if(mapFile.roomChars[i,j] == 'E')
                    {
                        // spriteBatch.Draw(enemyArray[0], new Rectangle(i*50, j*50, 50, 50), Color.White);
                    }
