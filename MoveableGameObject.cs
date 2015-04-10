@@ -21,7 +21,7 @@ namespace DelveCodeB
             set { direction = value; }
         }
 
-        public MoveableGameObject(int x, int y, int width, int height): base(x, y, width, height)
+        public MoveableGameObject(int x, int y, int width, int height): base()
         {
 
         }
