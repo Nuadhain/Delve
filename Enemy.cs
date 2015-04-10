@@ -21,6 +21,11 @@ namespace DelveCodeB
             set { strength = value; }
         }
         private Boolean alive;
+        public Boolean Alive
+        {
+            get { return alive; }
+            set { alive = value; }
+        }
         private int speed;
         public int Speed
         {
@@ -38,14 +43,6 @@ namespace DelveCodeB
         
         public Enemy(int x, int y, int width, int height, string nm) : base(x, y, width, height)
         {
-            health = 1;
-            strength = 1;
-            speed = 2;
-            name = nm;
-            width = 75;
-            height = 75;
-            player1 = new Player(x, y, width, height, name);
-            enem = new Enemy(x, y, width, height, name);
             alive = true;
         }
 
