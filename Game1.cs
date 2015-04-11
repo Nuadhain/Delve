@@ -5,62 +5,62 @@ namespace DelveCodeB
     /// </summary>
     public class Game1 : Game
     {
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        MapReader mapFile;
-        Player player1;
-        Enemy enem;
-        Texture2D playerAvatar;
-        Texture2D[] enemyArray;
-        Texture2D weaponSprite;
-        List<Texture2D> walls;
-        List<Texture2D> rocks;
-        Texture2D[] doors;
-        Texture2D gameOver;
-        Texture2D room;
-        Rectangle weaponLocation;
-        Rectangle weaponLocation1;
-        Rectangle location;
-        Rectangle enemyLocation;
-        Rectangle enemyLocation1;
-        Rectangle enemyLocation2;
-        Rectangle door1; // to be used to make sure doors will transition you into next room
-        Boolean active = false;
-        Boolean timerActive;
-        int pattern;
-        int pattern2;
-        int pattern3;
-        private int timer;
+
+        //list of enemies
+        List<Enemy> enemyList = new List<Enemy>();
+        //list of all walls
+        List<Wall> wallList = new List<Wall>();
+
+
+        Texture2D wallsTexture;
+        Texture2D doorsTexture;
+        Texture2D baseSkeletonTexture;
+        Texture2D skeletonWalkingLeft;
+        Texture2D skeletonWalkingRight;
+        Texture2D weaponSpriteTexture;
+        Texture2D PlayerAvatarTexture;
+        Texture2D gameOverTexture;
+        Texture2D roomTexture;
+
+        Rectangle weaponRect;
+        Rectangle weaponRect1;
+        Rectangle playerRect;
+        Rectangle door1;
+
+        Boolean weaponActive = false;
+        Boolean allEnemiesCleared = false;
+
         KeyboardState kstate = new KeyboardState();
         // private KeyboardState prevState; - will be used when we have animation
+        Player player1;
+        
+        private int weaponTimer;
+        Boolean weaponTimerActive;       
+        MapReader mapFile;
+
+
+
 
         public Game1()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            walls = new List<Texture2D>();
-            doors = new Texture2D[12];
-            enemyArray = new Texture2D[3];
-            enemyLocation = new Rectangle(20, 20, 50, 50);
-            enemyLocation1 = new Rectangle(400, 100, 50, 50);
-            enemyLocation2 = new Rectangle(250, 250, 50, 50);
-            location = new Rectangle(600, 300, 50, 50);
-            weaponLocation = new Rectangle(location.X + 30, location.Y + 9, 25, 25);
-            weaponLocation1 = new Rectangle(location.X + 30, location.Y + 9, 25, 25);
-            player1 = new Player(location.X, location.Y, location.Width, location.Height, "Player");
-            enem = new Enemy(enemyLocation.X, enemyLocation.Y, 50, 50, "Enemy");
-            enem.Health = 2;
-            pattern = 1;
-            pattern2 = 1;
-            pattern3 = 1;
-            timer = 0;
-            timerActive = false;
+
+            playerRect = new Rectangle(600, 300, 50, 50);
+            weaponRect = new Rectangle(playerRect.X + 30, playerRect.Y + 9, 25, 25);
+            weaponRect1 = new Rectangle(playerRect.X + 30, playerRect.Y + 9, 25, 25);
+            player1 = new Player(playerRect.X, playerRect.Y, playerRect.Width, playerRect.Height, "Player");
+            weaponTimer = 0;
+            weaponTimerActive = false;
             mapFile = new MapReader();
             graphics.PreferredBackBufferWidth = 1250;
             graphics.PreferredBackBufferHeight = 625;
             graphics.ApplyChanges();
-
+            // initialize playerAvatar, font and vector2 with correct dimensions
         }
 
         /// <summary>
@@ -84,16 +84,18 @@ namespace DelveCodeB
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            playerAvatar = Content.Load<Texture2D>("Heavy");
-            weaponSprite = Content.Load<Texture2D>("SwordUse");
-            gameOver = Content.Load<Texture2D>("EndGame");
-            room = Content.Load<Texture2D>("Room");
-            // populare enemy array with enemies
-            for (int i = 0; i < enemyArray.Length; i++)
-            {
-                enemyArray[i] = Content.Load<Texture2D>("Skeleton");
-            }
-            doors[0] = Content.Load<Texture2D>("DoorUse");
+            PlayerAvatarTexture = Content.Load<Texture2D>("Heavy");
+            weaponSpriteTexture = Content.Load<Texture2D>("SwordUse");
+            gameOverTexture = Content.Load<Texture2D>("EndGame");
+            roomTexture = Content.Load<Texture2D>("Room");
+            baseSkeletonTexture = Content.Load<Texture2D>("Skeleton");
+            skeletonWalkingLeft = Content.Load<Texture2D>("SkeletonWalking");
+            skeletonWalkingRight = Content.Load<Texture2D>("SkeletonWalkingRight");
+
+            doorsTexture = Content.Load<Texture2D>("DoorUse");
+            
+            //TODO: replace this with the rock.
+            wallsTexture = Content.Load<Texture2D>("Light");
 
 
             // TODO: use this.Content to load your game content here
@@ -120,117 +122,32 @@ namespace DelveCodeB
 
             // TODO: Add your update logic here
 
-            if (timerActive == true)
+            //Check if all enemies are dead.
+            if(allEnemiesCleared ==true)
             {
-                timer++;
+                
             }
 
 
-            if (timer == 30)
+
+
+            //Timer for weapon swings
+            if (weaponTimerActive == true)
             {
-                timer = 0;
-                timerActive = false;
+                weaponTimer++;
+            }
+            if (weaponTimer == 30)
+            {
+                weaponTimer = 0;
+                weaponTimerActive = false;
             }
 
             // enemy movement with set path for x/y coordinates: if collision occurs between you and enemy, you take damage, if it occurs
             // between your weapon and the enemy, the enemy will die
             // REPLACE THIS CODE WITH PATHING WHEN READY
-
-            if (pattern == 1 || pattern == 0 || pattern == 2)
-            {
-                if (pattern == 1)
-                {
-                    enemyArray[0] = Content.Load<Texture2D>("SkeletonWalkingRight");
-                    enemyLocation.X += 1;
-                    if (enemyLocation.X >= 900)
-                    {
-                        pattern--;
-                    }
-                }
-                if (pattern == 0)
-                {
-                    enemyArray[0] = Content.Load<Texture2D>("SkeletonWalking");
-                    enemyLocation.X -= 1;
-                    if (enemyLocation.X <= 10)
-                    {
-                        pattern++;
-                    }
-                }
-                if (pattern == 2)
-                {
-                    enemyLocation.X = 8000;
-                    enemyLocation.Y = 8000;
-                }
-
-            }
-            if (pattern2 == 1 || pattern2 == 0 || pattern2 == 2)
-            {
-                if (pattern2 == 1)
-                {
-                    enemyLocation1.Y += 1;
-                    if (enemyLocation1.Y >= 500)
-                    {
-                        pattern2--;
-                    }
-                }
-                if (pattern2 == 0)
-                {
-                    enemyLocation1.Y -= 1;
-                    if (enemyLocation1.Y <= 3)
-                    {
-                        pattern2++;
-                    }
-                }
-                if (pattern2 == 2)
-                {
-                    enemyLocation1.Y = 8000;
-                    enemyLocation1.X = 8000;
-                }
-
-            }
-            if (pattern3 == 1 || pattern3 == 0 || pattern3 == 2 || pattern3 == 3 || pattern3 == 4)
-            {
-                if (pattern3 == 1)
-                {
-                    enemyArray[2] = Content.Load<Texture2D>("SkeletonWalkingRight");
-                    enemyLocation2.X += 1;
-                    if (enemyLocation2.X >= 600)
-                    {
-                        pattern3++;
-                    }
-                }
-                if (pattern3 == 0)
-                {
-                    enemyArray[2] = Content.Load<Texture2D>("SkeletonWalking");
-                    enemyLocation2.X -= 1;
-                    if (enemyLocation2.X <= 50)
-                    {
-                        pattern3 = pattern3 + 3;
-                    }
-                }
-                if (pattern3 == 2)
-                {
-                    enemyLocation2.Y -= 1;
-                    if (enemyLocation2.Y <= 20)
-                    {
-                        pattern3 = pattern3 - 2;
-                    }
-                }
-                if (pattern3 == 3)
-                {
-                    enemyLocation2.Y += 1;
-                    if (enemyLocation2.Y >= 500)
-                    {
-                        pattern3 = pattern3 - 2;
-                    }
-                }
-                if (pattern3 == 4)
-                {
-                    enemyLocation2.X = 8000;
-                    enemyLocation2.Y = 8000;
-                }
-
-            }
+            
+            //Removed this because it conflicted with the rewrite.
+            
             // make sure updated player direction based on what the last key you hit was goes here!
 
             base.Update(gameTime);
@@ -246,350 +163,261 @@ namespace DelveCodeB
 
             spriteBatch.Begin();
 
-            spriteBatch.Draw(room, new Rectangle(0, 0, 1250, 625), Color.White);
+            spriteBatch.Draw(roomTexture, new Rectangle(0, 0, 1250, 625), Color.White);
 
             // load maps and draw game here
             mapFile.readRoom(1);
 
+
+            //loop through everything
             for (int i = 0; i < 25; i++)
             {
                 for (int j = 0; j < 25; j++)
-                {
+                {//Draw door at correct location
                     Rectangle door1 = new Rectangle(i * 50, j * 25, 50, 50);
                     if (mapFile.roomChars[i, j] == 'D')
                     {
-                        spriteBatch.Draw(doors[0], door1, Color.White);
+                        spriteBatch.Draw(doorsTexture, door1, Color.White);
 
                     }
+                    if(mapFile.roomChars[i,j] =='O')
+                    {
+                        //Add each new wall to the list of walls to draw and interact with.
+                        wallList.Add(new Wall(i * 50, j * 25, 50, 50));
+                    }
+
                     if (mapFile.roomChars[i, j] == 'P')
                     {
-                        spriteBatch.Draw(playerAvatar, location, Color.White);
+                        spriteBatch.Draw(PlayerAvatarTexture, playerRect, Color.White);
                     }
                     if (mapFile.roomChars[i, j] == 'E')
                     {
-                        // spriteBatch.Draw(enemyArray[0], new Rectangle(i*50, j*50, 50, 50), Color.White);
+                        //Add a new enemy to the list of enemies to draw and interact with.
+                        enemyList.Add(new Enemy(i * 50, j * 25, 50, 50, "enemy"));
                     }
                 }
             }
 
             //spriteBatch.Draw(playerAvatar, location, Color.White);
-            spriteBatch.Draw(weaponSprite, weaponLocation, Color.White);
+            
 
-            if (weaponLocation.X <= 30)
+            
+            if (weaponRect.X <= 30)
             {
-                location.X = 30;
-                weaponLocation.X = 60;
+                playerRect.X = 30;
+                weaponRect.X = 60;
             }
-            if (location.X <= 30)
+            if (playerRect.X <= 30)
             {
-                location.X = 30;
-                weaponLocation.X = 60;
-            }
-
-            if (location.Y <= 0)
-            {
-                weaponLocation.Y = 18;
-                weaponLocation.X = location.X + 30;
-                location.Y = 1;
-            }
-            if (weaponLocation.Y <= 0)
-            {
-                weaponLocation.Y = 18;
-                weaponLocation.X = location.X + 30;
-                location.Y = 1;
-            }
-            if (location.X >= graphics.PreferredBackBufferWidth - 80)
-            {
-                location.X = graphics.PreferredBackBufferWidth - 85;
-                weaponLocation.X = location.X - 10;
-            }
-            if (location.Y >= graphics.PreferredBackBufferHeight - 65)
-            {
-                location.Y = graphics.PreferredBackBufferHeight - 70;
-            }
-            if (weaponLocation.Y >= graphics.PreferredBackBufferHeight - 70)
-            {
-                weaponLocation.Y -= 5;
+                playerRect.X = 30;
+                weaponRect.X = 60;
             }
 
+            if (playerRect.Y <= 0)
+            {
+                weaponRect.Y = 18;
+                weaponRect.X = playerRect.X + 30;
+                playerRect.Y = 1;
+            }
+            if (weaponRect.Y <= 0)
+            {
+                weaponRect.Y = 18;
+                weaponRect.X = playerRect.X + 30;
+                playerRect.Y = 1;
+            }
+            if (playerRect.X >= graphics.PreferredBackBufferWidth - 80)
+            {
+                playerRect.X = graphics.PreferredBackBufferWidth - 85;
+                weaponRect.X = playerRect.X - 10;
+            }
+            if (playerRect.Y >= graphics.PreferredBackBufferHeight - 65)
+            {
+                playerRect.Y = graphics.PreferredBackBufferHeight - 70;
+                // weaponLocation.Y = location.Y - 5;
+            }
+            if (weaponRect.Y >= graphics.PreferredBackBufferHeight - 70)
+            {
+                weaponRect.Y -= 5;
+            }
 
+
+            //The movement with "W","A","S","D"
             kstate = Keyboard.GetState();
             if (kstate.IsKeyDown(Keys.W) == true && kstate.IsKeyUp(Keys.D) && kstate.IsKeyUp(Keys.S) && kstate.IsKeyUp(Keys.A) && player1.isKnockedBack == false)
             {
-                location.Y = location.Y - player1.Agility;
-                weaponLocation.Y = weaponLocation.Y - player1.Agility;
+                playerRect.Y = playerRect.Y - 1;
+                weaponRect.Y = weaponRect.Y - 1;
+                player1.Direction = 0;
             }
             if (kstate.IsKeyDown(Keys.D) == true && kstate.IsKeyUp(Keys.W) && kstate.IsKeyUp(Keys.S) && kstate.IsKeyUp(Keys.A) && player1.isKnockedBack == false)
             {
-                location.X = location.X + player1.Agility;
-                weaponLocation.X = weaponLocation.X + player1.Agility;
+                playerRect.X = playerRect.X + 1;
+                weaponRect.X = weaponRect.X + 1;
+                player1.Direction =1;
             }
             if (kstate.IsKeyDown(Keys.S) == true && kstate.IsKeyUp(Keys.W) && kstate.IsKeyUp(Keys.D) && kstate.IsKeyUp(Keys.A) && player1.isKnockedBack == false)
             {
-                location.Y = location.Y + player1.Agility;
-                weaponLocation.Y = weaponLocation.Y + player1.Agility;
+                playerRect.Y = playerRect.Y + 1;
+                weaponRect.Y = weaponRect.Y + 1;
+                player1.Direction =2;
             }
             if (kstate.IsKeyDown(Keys.A) == true && kstate.IsKeyUp(Keys.W) && kstate.IsKeyUp(Keys.D) && kstate.IsKeyUp(Keys.S) && player1.isKnockedBack == false)
             {
-                location.X = location.X - player1.Agility;
-                weaponLocation.X = weaponLocation.X - player1.Agility;
+                playerRect.X = playerRect.X - 1;
+                weaponRect.X = weaponRect.X - 1;
+                player1.Direction=3;
             }
-            if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Down) && timerActive == false && player1.isKnockedBack == false)
+            if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Down) && weaponTimerActive == false && player1.isKnockedBack == false)
             {
-                active = true;
-                timerActive = true;
-                weaponLocation.X = location.X + 12;
-                weaponLocation.Y = location.Y - 30;
-                spriteBatch.Draw(weaponSprite, weaponLocation, Color.Red);
+                weaponActive = true;
+                weaponTimerActive = true;
+                weaponRect.X = playerRect.X + 12;
+                weaponRect.Y = playerRect.Y - 30;
+                spriteBatch.Draw(weaponSpriteTexture, weaponRect, Color.Red);
 
             }
-            if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Down) && timerActive == false && player1.isKnockedBack == false)
+            //Right is pressed
+            if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Down) && weaponTimerActive == false && player1.isKnockedBack == false)
             {
-                active = true;
-                timerActive = true;
-                weaponLocation.X = location.X + 30;
-                weaponLocation.Y = location.Y + 9;
-                spriteBatch.Draw(weaponSprite, weaponLocation, Color.Red);
+                weaponActive = true;
+                weaponTimerActive = true;
+                weaponRect.X = playerRect.X + 30;
+                weaponRect.Y = playerRect.Y + 9;
+                spriteBatch.Draw(weaponSpriteTexture, weaponRect, Color.Red);
             }
-            if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Down) && timerActive == false && player1.isKnockedBack == false)
+            //Left is pressed
+            if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Down) && weaponTimerActive == false && player1.isKnockedBack == false)
             {
-                active = true;
-                timerActive = true;
-                weaponLocation.X = location.X - 10;
-                weaponLocation.Y = location.Y + 9;
-                spriteBatch.Draw(weaponSprite, weaponLocation, Color.Red);
+                weaponActive = true;
+                weaponTimerActive = true;
+                weaponRect.X = playerRect.X - 10;
+                weaponRect.Y = playerRect.Y + 9;
+                spriteBatch.Draw(weaponSpriteTexture, weaponRect, Color.Red);
             }
-            if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left) && timerActive == false && player1.isKnockedBack == false)
+            //Down is pressed
+            if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left) && weaponTimerActive == false && player1.isKnockedBack == false)
             {
-                active = true;
-                timerActive = true;
-                weaponLocation.X = location.X + 12;
-                weaponLocation.Y = location.Y + 40;
-                spriteBatch.Draw(weaponSprite, weaponLocation, Color.Red);
+                weaponActive = true;
+                weaponTimerActive = true;
+                weaponRect.X = playerRect.X + 12;
+                weaponRect.Y = playerRect.Y + 40;
+                spriteBatch.Draw(weaponSpriteTexture, weaponRect, Color.Red);
             }
 
+            //No keys pressed
             if (kstate.IsKeyDown(Keys.Down) == false && kstate.IsKeyDown(Keys.Left) == false && kstate.IsKeyDown(Keys.Right) == false && kstate.IsKeyDown(Keys.Up) == false)
             {
-                active = false;
+                weaponActive = false;
             }
 
-            if (location.Intersects(enemyLocation))
+            //Checks intersection between player and enemies.
+            
+            foreach(Enemy foe in enemyList)
             {
-                switch (location.X)
+                if(foe.IsColliding(player1))
                 {
-                    default:
-                        if (location.X >= enemyLocation.X)
-                        {
-                            location.X += 100;
-                            weaponLocation.X += 100;
-                        }
-                        else if (location.Y >= enemyLocation.Y)
-                        {
-                            location.Y += 50;
-                            weaponLocation.Y += 50;
-                        }
-                        if (location.X <= enemyLocation.X)
-                        {
-                            location.X -= 100;
-                            weaponLocation.X -= 100;
-                        }
-                        else if (location.Y <= enemyLocation.Y)
-                        {
-                            location.Y -= 50;
-                            weaponLocation.Y -= 50;
-                        }
-                        break;
-                }
-                spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-                spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-                spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-                player1.TakeHit();
+                    switch(player1.Direction)
+                    {
+                        case 0:
+                            {
 
-            }
-            if (location.Intersects(enemyLocation1))
-            {
-                switch (location.X)
-                {
-                    default:
-                        if (location.X >= enemyLocation1.X)
-                        {
-                            location.X += 100;
-                            weaponLocation.X += 100;
-                        }
-                        if (location.Y >= enemyLocation1.Y)
-                        {
-                            location.Y += 50;
-                            weaponLocation.Y += 50;
-                        }
-                        if (location.X <= enemyLocation1.X)
-                        {
-                            location.X -= 100;
-                            weaponLocation.X -= 100;
-                        }
-                        if (location.Y <= enemyLocation1.Y)
-                        {
-                            location.Y -= 50;
-                            weaponLocation.Y -= 50;
-                        }
-                        break;
+                                player1.Rect = new Rectangle(player1.Rect.X,player1.Rect.Y+50,player1.Rect.Width,player1.Rect.Height);
+                                weaponRect = new Rectangle(weaponRect.X, weaponRect.Y + 50, weaponRect.Width, weaponRect.Height);
+                                player1.TakeHit();
+                                break;
+                                
+                            }
+                        case 1:
+                            {
+                                player1.Rect = new Rectangle(player1.Rect.X - 100, player1.Rect.Y, player1.Rect.Width, player1.Rect.Height);
+                                weaponRect = new Rectangle(weaponRect.X - 100, weaponRect.Y, weaponRect.Width, weaponRect.Height);
+                                player1.TakeHit();
+                                break;
+                            }
+                        case 2:
+                            {
+                                player1.Rect = new Rectangle(player1.Rect.X, player1.Rect.Y - 50, player1.Rect.Width, player1.Rect.Height);
+                                weaponRect = new Rectangle(weaponRect.X, weaponRect.Y - 50, weaponRect.Width, weaponRect.Height);
+                                player1.TakeHit();
+                                break;
+                            }
+                        case 3:
+                            {
+                                player1.Rect = new Rectangle(player1.Rect.X + 100, player1.Rect.Y, player1.Rect.Width, player1.Rect.Height);
+                                weaponRect = new Rectangle(weaponRect.X + 100, weaponRect.Y, weaponRect.Width, weaponRect.Y);
+                                player1.TakeHit();
+                                break;
+                            }
+                    }
                 }
-                spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-                spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-                spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-                player1.TakeHit();
             }
-            if (location.Intersects(enemyLocation2))
-            {
-                switch (location.X)
-                {
-                    default:
-                        if (location.X >= enemyLocation2.X)
-                        {
-                            location.X += 100;
-                            weaponLocation.X += 100;
-                        }
-                        if (location.Y >= enemyLocation2.Y)
-                        {
-                            location.Y += 50;
-                            weaponLocation.Y += 50;
-                        }
-                        if (location.X <= enemyLocation2.X)
-                        {
-                            location.X -= 100;
-                            weaponLocation.X -= 100;
-                        }
-                        if (location.Y <= enemyLocation2.Y)
-                        {
-                            location.Y -= 50;
-                            weaponLocation.Y -= 50;
-                        }
-                        break;
-                }
-                spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-                spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-                spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-                player1.TakeHit();
-            }
+           
 
             // draw collisions of weapon and enemy - REPLACE WHEN YOU CAN, THIS ONLY TESTS TO SEE IF THE WEAPON COLLIDES,
             // AND IF IT DOES IT DELETES THE ENEMY TEMPORARILY, MAKE SURE TO REPLACE!
-            if (active == true)
+           
+            //Weapon colliding with enemies while being swung
+            foreach(Enemy foe in enemyList)
             {
-                while (weaponLocation.Intersects(enemyLocation))
+                if(weaponActive)
                 {
-                    while(enemyLocation.X >= weaponLocation.X)
+                    while(weaponRect.Intersects(foe.Rect))
                     {
-                        enemyLocation.X += 50;
-                        enem.TakeHit();
-                        break;
+                        switch(player1.Direction)
+                        {
+                            case 0:
+                                {
+                                    foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y - 50, foe.Rect.Width, foe.Rect.Height);
+                                    foe.TakeHit();
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    foe.Rect = new Rectangle(foe.Rect.X + 100, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                                    foe.TakeHit();
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y + 50, foe.Rect.Width, foe.Rect.Height);
+                                    foe.TakeHit();
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    foe.Rect = new Rectangle(foe.Rect.X - 100, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                                    foe.TakeHit();
+                                    break;
+                                }
+                        }
                     }
-                    while(enemyLocation.X <= weaponLocation.X)
-                    {
-                        enemyLocation.X -= 50;
-                        enem.TakeHit();
-                        break;
-                    }
+                }
+            }
+            
+            
 
-                    if(enem.Alive == false)
-                    {
-                        pattern = 2;
-                        spriteBatch.Draw(playerAvatar, location, Color.White);
-                        spriteBatch.Draw(weaponSprite, weaponLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[0], enemyLocation, Color.Red);
-                        spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-                        spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-                    }
-                    
-                    if(enem.Alive == true)
-                    {
-                        spriteBatch.Draw(playerAvatar, location, Color.White);
-                        spriteBatch.Draw(weaponSprite, weaponLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[0], enemyLocation, Color.Red);
-                        spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-                        spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-                    }
+
+            //Draw all enemies.
+           foreach(Enemy foe in enemyList)
+           {
+               switch(foe.Direction)
+               {
+                       //0=up 1=right 2=down 3=left
+                   case 0: spriteBatch.Draw(baseSkeletonTexture, foe.Rect, Color.White); break;
+                   case 1: spriteBatch.Draw(skeletonWalkingRight, foe.Rect, Color.White); break;
+                   case 2: spriteBatch.Draw(baseSkeletonTexture, foe.Rect, Color.White); break;
+                   case 3: spriteBatch.Draw(skeletonWalkingLeft, foe.Rect, Color.White); break;
+               }
                
-                }
-                while (weaponLocation.Intersects(enemyLocation1))
-                {
-                    while (enemyLocation1.X >= weaponLocation.X)
-                    {
-                        enemyLocation1.X += 50;
-                        enem.TakeHit();
+           }
+           //Draw the weapon.
+           spriteBatch.Draw(weaponSpriteTexture, weaponRect, Color.White);
 
-                        break;
-                    }
-                    while(enemyLocation1.X <= weaponLocation.X)
-                    {
-                        enemyLocation1.X -= 50;
-                        enem.TakeHit();
-                        break;
-                    }
-
-                    if(enem.Alive == false)
-                    {
-                        pattern2 = 2;
-                        spriteBatch.Draw(playerAvatar, location, Color.White);
-                        spriteBatch.Draw(weaponSprite, weaponLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.Red);
-                        spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-                    }
-                    
-                    if(enem.Alive == true)
-                    {
-                        spriteBatch.Draw(playerAvatar, location, Color.White);
-                        spriteBatch.Draw(weaponSprite, weaponLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.Red);
-                        spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-                    }
-                }
-                while (weaponLocation.Intersects(enemyLocation2))
-                {
-                    while (enemyLocation2.X >= weaponLocation.X)
-                    {
-                        enemyLocation2.X += 50;
-                        enem.TakeHit();
-                        break;
-                    }
-                    while(enemyLocation2.X <= weaponLocation.X)
-                    {
-                        enemyLocation2.X -= 50;
-                        enem.TakeHit();
-                        break;
-                    }
-
-                    if (enem.Alive == false)
-                    {
-                        pattern3 = 4;
-                        spriteBatch.Draw(playerAvatar, location, Color.White);
-                        spriteBatch.Draw(weaponSprite, weaponLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-                        spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.Red);
-                    }
-
-                    if(enem.Alive == true)
-                    {
-                        spriteBatch.Draw(playerAvatar, location, Color.White);
-                        spriteBatch.Draw(weaponSprite, weaponLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-                        spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-                        spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.Red);
-                    }
-                }
-            }
-
-            spriteBatch.Draw(enemyArray[0], enemyLocation, Color.White);
-            spriteBatch.Draw(enemyArray[1], enemyLocation1, Color.White);
-            spriteBatch.Draw(enemyArray[2], enemyLocation2, Color.White);
-
-            while (player1.IsAlive() == false)
-            {
-                spriteBatch.Draw(gameOver, new Rectangle(0, 0, 1250, 625), Color.White);
-                break;
-            }
+           while (player1.IsAlive() == false)
+           {
+               spriteBatch.Draw(gameOverTexture, new Rectangle(0, 0, 1250, 625), Color.White);
+               break;
+           }
             spriteBatch.End();
 
             base.Draw(gameTime);
