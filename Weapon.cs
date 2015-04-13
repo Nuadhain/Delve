@@ -23,11 +23,25 @@ namespace DelveCodeB
             set { weaponRange = value; }
         }
 
-        public Weapon(int x, int y, int width, int height, string name) : base(x, y, width, height)
+        private Texture2D weaponTexture;
+        public Texture2D WeaponTexture
+        {
+            get { return weaponTexture; }
+            set { weaponTexture = value; }
+        }
+
+        private int weapDirection;
+        public int WeapDirection
+        {
+            get { return weapDirection; }
+            set { weapDirection = value; }
+        }
+
+        public Weapon(int x, int y, int width, int height) : base(x, y, width, height)
         {
             width = 25;
             height = 25;
-            weaponName = name;
+            weapDirection = 1;
         }
     }
 }
