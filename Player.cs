@@ -40,11 +40,11 @@ namespace DelveCodeB
             get { return dexterity; }
             set
             {
-                if(dexterity <= 0 )
+                if (dexterity <= 0)
                 {
                     dexterity = 1;
                 }
-                else if(dexterity >= 15)
+                else if (dexterity >= 15)
                 {
                     dexterity = 15;
                 }
@@ -114,12 +114,6 @@ namespace DelveCodeB
                 }
             }
         }
-        private Weapon playerWeapon;
-        public Weapon PlayerWeapon
-        {
-            get { return playerWeapon; }
-            set { playerWeapon = value; }
-        }
         private string playerName;
         public string PlayerName
         {
@@ -132,7 +126,7 @@ namespace DelveCodeB
         private Random rgen2;
         private Random rgen3;
         private Random rgen4;
-        
+
         public Boolean alive = true;
         private int knockbackTimer;
         public int KnockbackTimer
@@ -142,17 +136,16 @@ namespace DelveCodeB
         }
         public Boolean isKnockedBack = false;
 
-        Weapon newWeapon;
         int[] possStartAttributes = new int[4];
-        
-        
+
+
 
         // constructor
 
-        public Player(int x, int y, int width, int height, string name) : base(x, y, width, height)
+        public Player(int x, int y, int width, int height, string name)
+            : base(x, y, width, height)
         {
             playerName = name;
-            playerWeapon = new Weapon(x, y, width, height, name);
             rgen1 = new Random();
             rgen2 = new Random();
             rgen3 = new Random();
@@ -164,26 +157,25 @@ namespace DelveCodeB
             width = 50;
             height = 50;
             knockbackTimer = 0;
-            newWeapon = new Weapon(x, y, 20, 20, name);
 
             possStartAttributes[0] = 1;
             possStartAttributes[1] = 2;
             possStartAttributes[2] = 3;
             possStartAttributes[3] = 5;
 
-            while(value == value1 || value == value2 || value == value3)
+            while (value == value1 || value == value2 || value == value3)
             {
                 value = rgen1.Next(0, 4);
             }
-            while(value1 == value || value1 == value2 || value1 == value3)
+            while (value1 == value || value1 == value2 || value1 == value3)
             {
                 value1 = rgen2.Next(0, 4);
             }
-            while(value2 == value || value2 == value1 || value2 == value3)
+            while (value2 == value || value2 == value1 || value2 == value3)
             {
                 value2 = rgen3.Next(0, 4);
             }
-            while(value3 == value || value3 == value2 || value3 == value1)
+            while (value3 == value || value3 == value2 || value3 == value1)
             {
                 value3 = rgen4.Next(0, 4);
             }
@@ -192,7 +184,7 @@ namespace DelveCodeB
             dexterity = possStartAttributes[value1];
             agility = possStartAttributes[value2];
             toughness = possStartAttributes[value3];
-            health = toughness + 100;
+            health = toughness + 2;
         }
 
 
@@ -202,7 +194,7 @@ namespace DelveCodeB
             health = health - 1;
             isKnockedBack = true;
             knockbackTimer++;
-            if(knockbackTimer == 1)
+            if (knockbackTimer == 1)
             {
                 knockbackTimer = 0;
                 isKnockedBack = false;
@@ -213,7 +205,7 @@ namespace DelveCodeB
         // IsAlive method
         public Boolean IsAlive()
         {
-            if(health <= 0)
+            if (health <= 0)
             {
                 alive = false;
                 return false;
@@ -223,7 +215,7 @@ namespace DelveCodeB
                 alive = true;
                 return true;
             }
-     
+
         }
     }
 }
