@@ -32,18 +32,17 @@ namespace DelveCodeB
             get { return speed; }
             set { speed = value; }
         }
-        private string name;
-        public string Name
+        private int floor = 1;
+        public int Floor
         {
-            get { return name; }
-            set { name = value; }
+            get { return floor; }
+            set { Floor = value; }
         }
-        Player player1;
-        Enemy enem;
-        
-        public Enemy(int x, int y, int width, int height, string nm) : base(x, y, width, height)
+
+        public Enemy(int x, int y, int width, int height, int floor) : base(x, y, width, height)
         {
             alive = true;
+            health = (floor * (1 / 2)) + 3;
         }
 
         // takehit method
@@ -56,7 +55,7 @@ namespace DelveCodeB
         // isalive method
         public void IsAlive()
         {
-            if(health <= 0)
+            if (health <= 0)
             {
                 alive = false;
             }
