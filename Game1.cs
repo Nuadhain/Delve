@@ -1,3 +1,15 @@
+#region Using Statements
+using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Storage;
+using Microsoft.Xna.Framework.GamerServices;
+using System.Threading;
+#endregion
+
 namespace DelveCodeB
 {
     /// <summary>
@@ -15,6 +27,10 @@ namespace DelveCodeB
         List<Wall> wallList = new List<Wall>();
         //list of all doors
         List<Door> doorList = new List<Door>();
+
+        // random object
+
+        Random rgen = new Random();
 
         Texture2D wallsTexture;
         Texture2D doorsTexture;
@@ -64,6 +80,8 @@ namespace DelveCodeB
             graphics.PreferredBackBufferWidth = 1250;
             graphics.PreferredBackBufferHeight = 625;
             graphics.ApplyChanges();
+            weap = new Weapon(weaponRect.X, weaponRect.Y, weaponRect.Width, weaponRect.Height);
+            weap.WeapDirection = 1;
             // initialize playerAvatar, font and vector2 with correct dimensions
 
 
@@ -159,20 +177,20 @@ namespace DelveCodeB
             //Check if all enemies are dead.
             if (allEnemiesCleared == false)
             {
-                for(int i = 0; i < enemyList.Count; i++)
+                for (int i = 0; i < enemyList.Count; i++)
                 {
-                    if(enemyList[i].Alive == false)
+                    if (enemyList[i].Alive == false)
                     {
                         enemyList.RemoveAt(i);
                     }
                 }
             }
-            if(enemyList.Count == 0)
+            if (enemyList.Count == 0)
             {
                 allEnemiesCleared = true;
             }
-            
-                        foreach (Door portal in doorList)
+
+            foreach (Door portal in doorList)
             {
                 if (portal.Rect.Intersects(playerRect) && allEnemiesCleared == true)
                 {
@@ -184,17 +202,17 @@ namespace DelveCodeB
                     playerRect = new Rectangle(600, 300, 50, 50);
                     weaponRect = new Rectangle(620, 300, 25, 25);
                     roomNum++;
-                    if(roomNum==1)
+                    if (roomNum == 1)
                     {
                         mapFile.readRoom(1);
                     }
-                    
-                    if(roomNum>1&&roomNum<7)
+
+                    if (roomNum > 1 && roomNum < 7)
                     {
                         mapFile.readRoom(rgen.Next(3, 8));
                     }
 
-                    if(roomNum>=7)
+                    if (roomNum >= 7)
                     {
                         mapFile.readRoom(2);
                     }
@@ -207,7 +225,7 @@ namespace DelveCodeB
                     {
                         for (int j = 0; j < 25; j++)
                         {
-                            
+
                             if (mapFile.roomChars[i, j] == 'D')
                             {
                                 doorList.Add(new Door(i * 50, j * 25, 50, 50));
@@ -227,7 +245,7 @@ namespace DelveCodeB
                         }
                     }
 
-                    
+
 
                 }
             }
@@ -237,7 +255,7 @@ namespace DelveCodeB
             {
                 weaponTimer++;
             }
-            if (weaponTimer == 51 - player1.Dexterity)
+            if (weaponTimer == 31 - player1.Dexterity)
             {
                 weaponTimer = 0;
                 weaponTimerActive = false;
@@ -395,7 +413,7 @@ namespace DelveCodeB
             }
 
 
-         
+
 
             //Checks intersection between player and enemies.
 
@@ -496,13 +514,13 @@ namespace DelveCodeB
             }
 
             // draw all walls
-            foreach(Wall obstruction in wallList)
+            foreach (Wall obstruction in wallList)
             {
                 spriteBatch.Draw(wallsTexture, obstruction.Rect, Color.White);
             }
 
             // draw the weapon
-            if (kstate.IsKeyDown(Keys.Down) == true || kstate.IsKeyDown(Keys.Left) == true || kstate.IsKeyDown(Keys.Right) == true || kstate.IsKeyDown(Keys.Up) == true)
+            if (kstate.IsKeyDown(Keys.Down) == true || kstate.IsKeyDown(Keys.Left) == true || kstate.IsKeyDown(Keys.Right) == true || kstate.IsKeyDown(Keys.Up) == true && weaponTimerActive == false)
             {
                 switch (weap.WeapDirection)
                 {
@@ -519,12 +537,11 @@ namespace DelveCodeB
                         break;
                 }
             }
-
             //draw the player 
             spriteBatch.Draw(PlayerAvatarTexture, playerRect, Color.White);
 
             // draw the doors
-            foreach(Door portal in doorList)
+            foreach (Door portal in doorList)
             {
                 spriteBatch.Draw(doorsTexture, portal.Rect, Color.White);
             }
