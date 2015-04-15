@@ -43,6 +43,7 @@ namespace DelveCodeB
 
         private int weaponTimer;
         private int floorNum = 1;
+        private int roomNum = 1;
         Boolean weaponTimerActive;
         MapReader mapFile;
         private Weapon weap;
@@ -57,7 +58,6 @@ namespace DelveCodeB
             weaponRect = new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25);
             weaponRect1 = new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25);
             player1 = new Player(playerRect.X, playerRect.Y, playerRect.Width, playerRect.Height, "Player");
-            weap = new Weapon(weaponRect.X, weaponRect.Y, 25, 25);
             weaponTimer = 0;
             weaponTimerActive = false;
             mapFile = new MapReader();
@@ -66,9 +66,10 @@ namespace DelveCodeB
             graphics.ApplyChanges();
             // initialize playerAvatar, font and vector2 with correct dimensions
 
-            // load maps and draw game here
-            mapFile.readRoom(3);
 
+
+            // load maps and draw game here
+            mapFile.readRoom(1);
 
             //loop through everything
             for (int i = 0; i < 25; i++)
@@ -169,6 +170,66 @@ namespace DelveCodeB
             if(enemyList.Count == 0)
             {
                 allEnemiesCleared = true;
+            }
+            
+                        foreach (Door portal in doorList)
+            {
+                if (portal.Rect.Intersects(playerRect) && allEnemiesCleared == true)
+                {
+                    //Reset the lists, read in a new room, regain health equal to toughness/2.
+                    //Go back to top?
+
+                    allEnemiesCleared = false;
+
+                    playerRect = new Rectangle(600, 300, 50, 50);
+                    weaponRect = new Rectangle(620, 300, 25, 25);
+                    roomNum++;
+                    if(roomNum==1)
+                    {
+                        mapFile.readRoom(1);
+                    }
+                    
+                    if(roomNum>1&&roomNum<7)
+                    {
+                        mapFile.readRoom(rgen.Next(3, 8));
+                    }
+
+                    if(roomNum>=7)
+                    {
+                        mapFile.readRoom(2);
+                    }
+
+                    doorList = new List<Door>();
+                    wallList = new List<Wall>();
+                    enemyList = new List<Enemy>();
+                    //loop through everything
+                    for (int i = 0; i < 25; i++)
+                    {
+                        for (int j = 0; j < 25; j++)
+                        {
+                            
+                            if (mapFile.roomChars[i, j] == 'D')
+                            {
+                                doorList.Add(new Door(i * 50, j * 25, 50, 50));
+
+                            }
+                            if (mapFile.roomChars[i, j] == 'O')
+                            {
+                                //Add each new wall to the list of walls to draw and interact with.
+                                wallList.Add(new Wall(i * 50, j * 25, 50, 50));
+                            }
+
+                            if (mapFile.roomChars[i, j] == 'E')
+                            {
+                                //Add a new enemy to the list of enemies to draw and interact with.
+                                enemyList.Add(new Enemy(i * 50, j * 25, 50, 50, floorNum));
+                            }
+                        }
+                    }
+
+                    
+
+                }
             }
 
             //Timer for weapon swings
