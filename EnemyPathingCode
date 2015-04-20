@@ -1,0 +1,100 @@
+//Copy and past this code into Game1 update method
+//Enemy pathing
+            foreach(Enemy foe in enemyList)
+            {
+                //create a variable that represents which axis the foe is blocked from moving in collisions. (X = 0, Y = 1)
+                int axisStop = 0;
+                //create a boolean that tests if there was a collision
+                bool hasCollided = false;
+
+                //check for collisions
+                foreach(Wall obstruction in wallList)
+                {
+                    //check if enemy is colliding with obstacle
+                    if(obstruction.Rect.Intersects(foe.Rect))
+                    {
+                        //set hasCollided to true
+                        hasCollided = true;
+
+                        //send the enemy in the opposite direction
+                        if (foe.Rect.X > obstruction.Rect.X)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X + 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                            axisStop = 0;
+                        }
+                        if (foe.Rect.X < obstruction.Rect.X)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X - 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                            axisStop = 0;
+                        }
+                        if (foe.Rect.Y > obstruction.Rect.Y)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y + 1, foe.Rect.Width, foe.Rect.Height);
+                            axisStop = 1;
+                        }
+                        if (foe.Rect.Y < obstruction.Rect.Y)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y - 1, foe.Rect.Width, foe.Rect.Height);
+                            axisStop = 1;
+                        }
+                    }
+                }
+
+                //for collisions
+                if (hasCollided == true)
+                {
+                    //test for aggro
+                    if ((foe.Rect.X - playerRect.X) < 200 && (foe.Rect.X - playerRect.X) > -200 && (foe.Rect.Y - playerRect.Y) < 200 && (foe.Rect.Y - playerRect.Y) > -200)
+                    {
+                        if (axisStop == 0)
+                        {
+                            //try to move around the obstacle towards the player
+                            if (foe.Rect.Y < playerRect.Y)
+                            {
+                                foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y + 1, foe.Rect.Width, foe.Rect.Height);
+                            }
+                            if (foe.Rect.Y > playerRect.Y)
+                            {
+                                foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y - 1, foe.Rect.Width, foe.Rect.Height);
+                            }
+                        }
+                        else
+                        {
+                            //try to move around the obstacle towards the player
+                            if (foe.Rect.X < playerRect.X)
+                            {
+                                foe.Rect = new Rectangle(foe.Rect.X + 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                            }
+                            if (foe.Rect.X > playerRect.X)
+                            {
+                                foe.Rect = new Rectangle(foe.Rect.X - 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                            }
+                        }
+                    }
+                }
+                //if the enemy has not collided with something run the regular pathing
+                else
+                {
+                    //test for aggro
+                    if ((foe.Rect.X - playerRect.X) < 200 && (foe.Rect.X - playerRect.X) > -200 && (foe.Rect.Y - playerRect.Y) < 200 && (foe.Rect.Y - playerRect.Y) > -200)
+                    {
+                        //check for player's location relative to enemy and follow player
+                        if (foe.Rect.X < playerRect.X)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X + 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                        }
+                        if (foe.Rect.X > playerRect.X)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X - 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                        }
+                        if (foe.Rect.Y < playerRect.Y)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y + 1, foe.Rect.Width, foe.Rect.Height);
+                        }
+                        if (foe.Rect.Y > playerRect.Y)
+                        {
+                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y - 1, foe.Rect.Width, foe.Rect.Height);
+                        }
+                    }
+                }
+            }
