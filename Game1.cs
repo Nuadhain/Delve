@@ -808,7 +808,7 @@ namespace DelveGame
             //Checks intersection between enemies and players
             foreach (Enemy foe in enemyList)
             {
-                foe.Strength = (floorNum * (1 / 2)) + 1;
+                foe.Strength = (floorNum * (1 / 2)) + 1; // set the strength of the enemy to increment by floor number
                 if (foe.Rect.Intersects(playerRect))
                 {
                     switch (player1.Direction)
@@ -821,7 +821,7 @@ namespace DelveGame
                                 player1.TakeHit();
                                 if(player1.Health == 0)
                                 {
-                                    screenState = ScreenState.GameOverScreen;
+                                    screenState = ScreenState.GameOverScreen; // if player dies, load game over screen
                                 }
                                 break;
                             }
@@ -833,7 +833,7 @@ namespace DelveGame
                                 player1.TakeHit();
                                 if (player1.Health == 0)
                                 {
-                                    screenState = ScreenState.GameOverScreen;
+                                    screenState = ScreenState.GameOverScreen; // if player dies load game over screen
                                 }
                                 break;
                             }
@@ -845,7 +845,7 @@ namespace DelveGame
                                 player1.TakeHit();
                                 if (player1.Health == 0)
                                 {
-                                    screenState = ScreenState.GameOverScreen;
+                                    screenState = ScreenState.GameOverScreen; // if player dies load game over screen
                                 }
                                 break;
                             }
@@ -857,7 +857,7 @@ namespace DelveGame
                                 player1.TakeHit();
                                 if (player1.Health == 0)
                                 {
-                                    screenState = ScreenState.GameOverScreen;
+                                    screenState = ScreenState.GameOverScreen; // if player dies load game over screen
                                 }
                                 break;
                             }
@@ -1279,7 +1279,7 @@ namespace DelveGame
             spriteBatch.End();
         }
 
-        public void GameOverScreen()
+        public void GameOverScreen() // draw a game over screen state if player is dead
         {
 
             mState = Mouse.GetState();
