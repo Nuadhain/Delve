@@ -447,6 +447,15 @@ namespace DelveGame
             {
                 allEnemiesCleared = true;
             }
+            
+             for (int i = 0; i < weaponList.Count; i++)
+            {
+                if (wepRemove == true)
+                {
+                    weaponList.RemoveAt(i);
+                    wepRemove = false;
+                }
+            }
 
             foreach (Door portal in doorList)
             {
@@ -523,17 +532,31 @@ namespace DelveGame
                                 exitDoor.Rect = new Rectangle(i * 50, j * 25, 50, 50);
                                 doorList.Add(exitDoor);
                             }
-                            if(mapFile.roomChars[i, j] == 'W')
+                            if (mapFile.roomChars[i, j] == 'W')
                             {
                                 Random rgen = new Random();
+                                Random rgen1 = new Random();
                                 int value = rgen.Next(0, 3);
-                                switch(value)
+                                switch (value)
                                 {
                                     case 0: Weapon wep = new Weapon(i * 50, j * 25, 25, 25, "axe");
+                                        wep.Rect = new Rectangle(i * 50, j * 25, 25, 25);
+                                        wep.WeaponDamage = rgen1.Next(3, 6);
+                                        weaponList.Add(wep);
                                         break;
 
+                                    case 1: Weapon wep1 = new Weapon(i * 50, j * 25, 25, 25, "spear");
+                                        wep1.Rect = new Rectangle(i * 50, j * 25, 25, 25);
+                                        wep1.WeaponDamage = rgen1.Next(1, 5);
+                                        weaponList.Add(wep1);
+                                        break;
+
+                                    case 2: Weapon wep2 = new Weapon(i * 50, j * 25, 25, 25, "sword");
+                                        wep2.Rect = new Rectangle(i * 50, j * 25, 25, 25);
+                                        wep2.WeaponDamage = rgen1.Next(2, 5);
+                                        weaponList.Add(wep2);
+                                        break;
                                 }
-                                // draw a random weapon
                             }
                         }
                     }
@@ -1028,7 +1051,7 @@ namespace DelveGame
         }
 
         //Draw game screen
-        public void DrawGame()
+public void DrawGame()
         {
             spriteBatch.Begin();
 
@@ -1041,78 +1064,199 @@ namespace DelveGame
             }
 
             //Draw the weapon
-            if (weap.CritSuccess == true)
+            if (swordActive == true)
             {
-                if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                if (weap.CritSuccess == true)
                 {
-                    spriteBatch.Draw(swordUpSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.Red);
+                    if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(swordUpSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(swordRightSpriteTexture, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(swordDownSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
+                    {
+                        spriteBatch.Draw(swordLeftSpriteTexture, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.Red);
+                    }
                 }
-                if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
+                if (weap.CritSuccess == false)
                 {
-                    spriteBatch.Draw(swordRightSpriteTexture, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.Red);
-                }
-                if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
-                {
-                    spriteBatch.Draw(swordDownSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.Red);
-                }
-                if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
-                {
-                    spriteBatch.Draw(swordLeftSpriteTexture, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.Red);
+                    if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(swordUpSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.White);
+                    }
+                    if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(swordRightSpriteTexture, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.White);
+                    }
+                    if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(swordDownSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.White);
+                    }
+                    if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
+                    {
+                        spriteBatch.Draw(swordLeftSpriteTexture, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.White);
+                    }
                 }
             }
-            if (weap.CritSuccess == false)
+            else if (spearActive == true)
             {
-                if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                if (weap.CritSuccess == true)
                 {
-                    spriteBatch.Draw(swordUpSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.White);
+                    if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(spearUp, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(spearRight, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(spearDown, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
+                    {
+                        spriteBatch.Draw(spearLeft, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.Red);
+                    }
                 }
-                if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
-                {
-                    spriteBatch.Draw(swordRightSpriteTexture, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.White);
+                    if (weap.CritSuccess == false)
+                    {
+                        if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                        {
+                            spriteBatch.Draw(spearUp, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.White);
+                        }
+                        if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
+                        {
+                            spriteBatch.Draw(spearRight, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.White);
+                        }
+                        if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                        {
+                            spriteBatch.Draw(spearDown, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.White);
+                        }
+                        if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
+                        {
+                            spriteBatch.Draw(spearLeft, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.White);
+                        }
+                    }
                 }
-                if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+            else if (axeActive == true)
+            {
+                if (weap.CritSuccess == true)
                 {
-                    spriteBatch.Draw(swordDownSpriteTexture, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.White);
+                    if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(axeUp, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(axeRight, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(axeDown, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.Red);
+                    }
+                    if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
+                    {
+                        spriteBatch.Draw(axeLeft, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.Red);
+                    }
                 }
-                if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
+                if (weap.CritSuccess == false)
                 {
-                    spriteBatch.Draw(swordLeftSpriteTexture, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.White);
+                    if (kstate.IsKeyDown(Keys.Up) == true && kstate.IsKeyUp(Keys.Left) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(axeUp, new Rectangle(playerRect.X + 12, playerRect.Y - 30, 25, 25), Color.White);
+                    }
+                    if (kstate.IsKeyDown(Keys.Right) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(axeRight, new Rectangle(playerRect.X + 40, playerRect.Y + 9, 25, 25), Color.White);
+                    }
+                    if (kstate.IsKeyDown(Keys.Down) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Right) && kstate.IsKeyUp(Keys.Left))
+                    {
+                        spriteBatch.Draw(axeDown, new Rectangle(playerRect.X + 12, playerRect.Y + 50, 25, 25), Color.White);
+                    }
+                    if (kstate.IsKeyDown(Keys.Left) == true && kstate.IsKeyUp(Keys.Up) && kstate.IsKeyUp(Keys.Down) && kstate.IsKeyUp(Keys.Right))
+                    {
+                        spriteBatch.Draw(axeLeft, new Rectangle(playerRect.X - 10, playerRect.Y + 9, 25, 25), Color.White);
+                    }
                 }
             }
+                //Draw all enemies.
+                foreach (Enemy foe in enemyList)
+                {
+                    switch (foe.Direction)
+                    {
+                        //0=up 1=right 2=down 3=left
+                        case 0: spriteBatch.Draw(baseSkeletonTexture, foe.Rect, Color.White); break;
+                        case 1: spriteBatch.Draw(skeletonWalkingRight, foe.Rect, Color.White); break;
+                        case 2: spriteBatch.Draw(baseSkeletonTexture, foe.Rect, Color.White); break;
+                        case 3: spriteBatch.Draw(skeletonWalkingLeft, foe.Rect, Color.White); break;
+                    }
+                }
 
-            //Draw all enemies.
-            foreach (Enemy foe in enemyList)
-            {
-                switch (foe.Direction)
+                // draw weapons in weapon list
+                foreach (Weapon w in weaponList)
                 {
-                    //0=up 1=right 2=down 3=left
-                    case 0: spriteBatch.Draw(baseSkeletonTexture, foe.Rect, Color.White); break;
-                    case 1: spriteBatch.Draw(skeletonWalkingRight, foe.Rect, Color.White); break;
-                    case 2: spriteBatch.Draw(baseSkeletonTexture, foe.Rect, Color.White); break;
-                    case 3: spriteBatch.Draw(skeletonWalkingLeft, foe.Rect, Color.White); break;
+                    if (w.WeaponName == "axe")
+                    {
+                        spriteBatch.Draw(axeUp, w.Rect, Color.White);
+                        if(playerRect.Intersects(w.Rect))
+                        {
+                            axeActive = true;
+                            swordActive = false;
+                            spearActive = false;
+                            wepRemove = true;
+                        }
+                    }
+                    if (w.WeaponName == "sword")
+                    {
+                        spriteBatch.Draw(swordUpSpriteTexture, w.Rect, Color.White);
+                        if(playerRect.Intersects(w.Rect))
+                        {
+                            swordActive = true;
+                            axeActive = false;
+                            spearActive = false;
+                            wepRemove = true;
+                        }
+                    }
+                    if (w.WeaponName == "spear")
+                    {
+                        spriteBatch.Draw(spearUp, w.Rect, Color.White);
+                        if(playerRect.Intersects(w.Rect))
+                        {
+                            spearActive = true;
+                            swordActive = false;
+                            axeActive = false;
+                            wepRemove = true;
+                        }
+                    }
                 }
-            }
+                //Draw the player 
+                spriteBatch.Draw(PlayerAvatarTexture, playerRect, Color.White);
 
-            //Draw the player 
-            spriteBatch.Draw(PlayerAvatarTexture, playerRect, Color.White);
+                //Draw the doors
+                foreach (Door portal in doorList)
+                {
+                    spriteBatch.Draw(doorsTexture, portal.Rect, Color.White);
+                }
 
-            //Draw the doors
-            foreach (Door portal in doorList)
-            {
-                spriteBatch.Draw(doorsTexture, portal.Rect, Color.White);
+                mState = Mouse.GetState();
+                //Player Dies
+                while (player1.IsAlive() == false)
+                {
+                    spriteBatch.Draw(gameOverTexture, new Rectangle(0, 0, 1250, 625), Color.White);
+                    if (mState.LeftButton == ButtonState.Pressed)
+                        Environment.Exit(0);
+                    break;
+                }
+                spriteBatch.End();
             }
-
-            mState = Mouse.GetState();
-            //Player Dies
-            while (player1.IsAlive() == false)
-            {
-                spriteBatch.Draw(gameOverTexture, new Rectangle(0, 0, 1250, 625), Color.White);
-                if (mState.LeftButton == ButtonState.Pressed)
-                    Environment.Exit(0);
-                break;
-            }
-            spriteBatch.End();
-        }
 
         //Draw pause screen
         public void DrawPause()
