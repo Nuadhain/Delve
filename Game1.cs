@@ -80,7 +80,7 @@ namespace DelveGame
         string[] possNames = new string[15];
 
         //Enum for game states
-        private enum ScreenState { StartScreen, InstrScreen, PauseScreen, GameScreen };
+        private enum ScreenState { StartScreen, InstrScreen, PauseScreen, GameScreen, GameOverScreen };
         ScreenState screenState = new ScreenState();
 
         //Attributes, Textures, Lists, Etc all for the game itself
@@ -747,19 +747,19 @@ namespace DelveGame
                         //Check for player's location relative to enemy and follow player
                         if (foe.Rect.X < playerRect.X)
                         {
-                            foe.Rect = new Rectangle(foe.Rect.X + 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                            foe.Rect = new Rectangle(foe.Rect.X + foe.Speed, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
                         }
                         if (foe.Rect.X > playerRect.X)
                         {
-                            foe.Rect = new Rectangle(foe.Rect.X - 1, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
+                            foe.Rect = new Rectangle(foe.Rect.X - foe.Speed, foe.Rect.Y, foe.Rect.Width, foe.Rect.Height);
                         }
                         if (foe.Rect.Y < playerRect.Y)
                         {
-                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y + 1, foe.Rect.Width, foe.Rect.Height);
+                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y + foe.Speed, foe.Rect.Width, foe.Rect.Height);
                         }
                         if (foe.Rect.Y > playerRect.Y)
                         {
-                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y - 1, foe.Rect.Width, foe.Rect.Height);
+                            foe.Rect = new Rectangle(foe.Rect.X, foe.Rect.Y - foe.Speed, foe.Rect.Width, foe.Rect.Height);
                         }
                     }
                 }
@@ -808,7 +808,7 @@ namespace DelveGame
             //Checks intersection between enemies and players
             foreach (Enemy foe in enemyList)
             {
-                // foe.Strength = (floorNum * (1 / 2)) + 1;
+                foe.Strength = (floorNum * (1 / 2)) + 1;
                 if (foe.Rect.Intersects(playerRect))
                 {
                     switch (player1.Direction)
@@ -817,28 +817,48 @@ namespace DelveGame
                             {
                                 playerRect = new Rectangle(playerRect.X, playerRect.Y + 50, playerRect.Width, playerRect.Height);
                                 weaponRect = new Rectangle(weaponRect.X, weaponRect.Y + 50, weaponRect.Width, weaponRect.Height);
+                                player1.Health = player1.Health - foe.Strength;
                                 player1.TakeHit();
+                                if(player1.Health == 0)
+                                {
+                                    screenState = ScreenState.GameOverScreen;
+                                }
                                 break;
                             }
                         case 1:
                             {
                                 playerRect = new Rectangle(playerRect.X - 100, playerRect.Y, playerRect.Width, playerRect.Height);
                                 weaponRect = new Rectangle(weaponRect.X - 100, weaponRect.Y, weaponRect.Width, weaponRect.Height);
+                                player1.Health = player1.Health - foe.Strength;
                                 player1.TakeHit();
+                                if (player1.Health == 0)
+                                {
+                                    screenState = ScreenState.GameOverScreen;
+                                }
                                 break;
                             }
                         case 2:
                             {
                                 playerRect = new Rectangle(playerRect.X, playerRect.Y - 50, playerRect.Width, playerRect.Height);
                                 weaponRect = new Rectangle(weaponRect.X, weaponRect.Y - 50, weaponRect.Width, weaponRect.Height);
+                                player1.Health = player1.Health - foe.Strength;
                                 player1.TakeHit();
+                                if (player1.Health == 0)
+                                {
+                                    screenState = ScreenState.GameOverScreen;
+                                }
                                 break;
                             }
                         case 3:
                             {
                                 playerRect = new Rectangle(playerRect.X + 100, playerRect.Y, playerRect.Width, playerRect.Height);
                                 weaponRect = new Rectangle(weaponRect.X + 100, weaponRect.Y, weaponRect.Width, weaponRect.Y);
+                                player1.Health = player1.Health - foe.Strength;
                                 player1.TakeHit();
+                                if (player1.Health == 0)
+                                {
+                                    screenState = ScreenState.GameOverScreen;
+                                }
                                 break;
                             }
                     }
@@ -1246,14 +1266,6 @@ namespace DelveGame
 
             mState = Mouse.GetState();
 
-            //Player Dies
-            while (player1.IsAlive() == false)
-            {
-                spriteBatch.Draw(gameOverTexture, new Rectangle(0, 0, 1250, 625), Color.White);
-                if (mState.LeftButton == ButtonState.Pressed)
-                    Environment.Exit(0);
-                break;
-            }
             spriteBatch.End();
         }
 
@@ -1264,6 +1276,20 @@ namespace DelveGame
             //Draw background
             spriteBatch.Draw(pauseBack, bgRect, Color.White);
 
+            spriteBatch.End();
+        }
+
+        public void GameOverScreen()
+        {
+
+            mState = Mouse.GetState();
+            spriteBatch.Begin();
+            //Draw background
+            spriteBatch.Draw(gameOverTexture, new Rectangle(0, 0, 1250, 625), Color.White);
+            if (mState.LeftButton == ButtonState.Pressed)
+            {
+                Environment.Exit(0);
+            }
             spriteBatch.End();
         }
 
@@ -1289,6 +1315,9 @@ namespace DelveGame
 
             if (screenState == ScreenState.PauseScreen) //Draw the pause screen
                 DrawPause();
+
+            if (screenState == ScreenState.GameOverScreen) // Draw game over screen
+                GameOverScreen();
 
             base.Draw(gameTime);
         }
