@@ -123,10 +123,14 @@ namespace DelveGame
         Rectangle playerRect;
         //Rectangle door1;
 
-        //Booleans
-        Boolean weaponActive = false;
+          //Booleans
+        Boolean weaponActive = true;
         Boolean allEnemiesCleared = false;
-        Boolean weaponTimerActive;
+        Boolean weaponTimerActive = false;
+        Boolean swordActive;
+        Boolean spearActive;
+        Boolean axeActive;
+        Boolean wepRemove;
 
         KeyboardState kstate = new KeyboardState();  //Private KeyboardState prevState; - will be used when we have animation
 
@@ -217,6 +221,10 @@ namespace DelveGame
             weaponTimerActive = false;
             weap = new Weapon(weaponRect.X, weaponRect.Y, weaponRect.Width, weaponRect.Height, "sword");
             weap.WeapDirection = 1;
+            swordActive = true;
+            spearActive = false;
+            axeActive = false;
+            wepRemove = false;
             mapFile = new MapReader();
 
             //Load maps and draw game here
