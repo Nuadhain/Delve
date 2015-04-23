@@ -34,23 +34,23 @@ namespace DelveCodeB
                 }
             }
         }
-        private int dexterity;
-        public int Dexterity
+          private int luck;
+        public int Luck
         {
-            get { return dexterity; }
+            get { return luck; }
             set
             {
-                if (dexterity <= 0)
+                if (luck <= 0)
                 {
-                    dexterity = 1;
+                    luck = 1;
                 }
-                else if (dexterity >= 15)
+                else if (luck >= 15)
                 {
-                    dexterity = 15;
+                    luck = 15;
                 }
                 else
                 {
-                    dexterity = value;
+                    luck = value;
                 }
             }
         }
