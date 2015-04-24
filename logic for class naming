@@ -1,0 +1,203 @@
+
+            //Test for highest value, by comparing all variables.
+
+            if (toughnessBar.Value>strengthBar.Value&&toughnessBar.Value>luckBar.Value&&toughnessBar.Value>agilityBar.Value)
+            {
+                highestValue = "toughness";
+                hasHighest = true;
+            }
+
+            if (strengthBar.Value>toughnessBar.Value&&strengthBar.Value>luckBar.Value&&strengthBar.Value>agilityBar.Value)
+            {
+                highestValue = "strength";
+                hasHighest = true;
+            }
+
+            if (luckBar.Value > strengthBar.Value && luckBar.Value > toughnessBar.Value && luckBar.Value > agilityBar.Value)
+            {
+                highestValue = "luck";
+                hasHighest = true;
+            }
+
+            if(agilityBar.Value>toughnessBar.Value&&agilityBar.Value>strengthBar.Value&&agilityBar.Value>luckBar.Value)
+            {
+                highestValue = "agility";
+                hasHighest = true;
+            }
+
+            //If it has a highest, test for a second highest.
+            //GOD HELP ME SO MANY IF STATEMENTS
+            if(hasHighest== true)
+            {
+                //Highest is TOUGHNESS
+                if (highestValue == "toughness")
+                {
+                    if (strengthBar.Value > luckBar.Value && strengthBar.Value > agilityBar.Value)
+                    {
+                        secondHighestValue = "strength";
+                        hasSecondHighest = true;
+                    }
+
+                    if (luckBar.Value > strengthBar.Value && luckBar.Value > agilityBar.Value)
+                    {
+                        secondHighestValue = "luck";
+                        hasSecondHighest = true;
+                    }
+
+                    if (agilityBar.Value > strengthBar.Value && agilityBar.Value > luckBar.Value)
+                    {
+                        secondHighestValue = "agility";
+                        hasSecondHighest = true;
+                    }
+                }
+                //Highest is STRENGTH
+                if(highestValue == "strength")
+                {
+                    if(toughnessBar.Value > luckBar.Value && toughnessBar.Value > agilityBar.Value)
+                    {
+                        secondHighestValue = "toughness";
+                        hasSecondHighest = true;
+                    }
+
+                    if(luckBar.Value > toughnessBar.Value && luckBar.Value > agilityBar.Value)
+                    {
+                        secondHighestValue = "luck";
+                        hasSecondHighest = true;
+                    }
+
+                    if(agilityBar.Value > toughnessBar.Value && agilityBar.Value > luckBar.Value)
+                    {
+                        secondHighestValue = "agility";
+                        hasSecondHighest = true;
+                    }
+                }
+                //Highest is DEXTERITY
+                if(highestValue == "luck")
+                {
+                    if(toughnessBar.Value > strengthBar.Value && toughnessBar.Value > agilityBar.Value)
+                    {
+                        secondHighestValue = "toughness";
+                        hasSecondHighest = true;
+                    }
+
+                    if(strengthBar.Value > toughnessBar.Value && strengthBar.Value > agilityBar.Value)
+                    {
+                        secondHighestValue = "strength";
+                        hasSecondHighest = true;
+                    }
+
+                    if(agilityBar.Value > toughnessBar.Value && agilityBar.Value > luckBar.Value)
+                    {
+                        secondHighestValue = "agility";
+                        hasSecondHighest = true;
+                    }
+                }
+                //Highest is AGILITY
+                if(highestValue == "agility")
+                {
+                    if(toughnessBar.Value > strengthBar.Value && toughnessBar.Value > luckBar.Value)
+                    {
+                        secondHighestValue = "toughness";
+                        hasSecondHighest = true;
+                    }
+
+                    if(strengthBar.Value > toughnessBar.Value && strengthBar.Value > luckBar.Value)
+                    {
+                        secondHighestValue = "strength";
+                        hasSecondHighest = true;
+                    }
+
+                    if(luckBar.Value > toughnessBar.Value && luckBar.Value > strengthBar.Value)
+                    {
+                        secondHighestValue = "luck";
+                        hasSecondHighest = true;
+                    }
+                }
+                
+                
+            }
+       
+            //Now that we have highest and second highest stats, we can work out what the title of the character is.
+            if(highestValue == "toughness")
+            {
+                if(secondHighestValue =="strength")
+                {
+                    titleClass = "the Barbarian";
+                }
+                if(secondHighestValue == "luck")
+                {
+                    titleClass = "the Lancer";
+                }
+                if(secondHighestValue == "agility")
+                {
+                    titleClass = "the Squire";
+                }
+                if(hasSecondHighest == false)
+                {
+                    titleClass = "the Tough";
+                }
+            }
+            if(highestValue == "strength")
+            {
+                if(secondHighestValue == "toughness")
+                {
+                    titleClass = "the Knight";
+                }
+                if(secondHighestValue == "luck")
+                {
+                    titleClass = "the Bandit";
+                }
+                if(secondHighestValue == "agility")
+                {
+                    titleClass = "the Warrior";
+                }
+                if (hasSecondHighest == false)
+                {
+                    titleClass = "the Strong";
+                }
+            }
+            if(highestValue == "luck")
+            {
+                if(secondHighestValue == "toughness")
+                {
+                    titleClass = "the Paladin";
+                }
+                if(secondHighestValue == "strength")
+                {
+                    titleClass = "the Ranger";
+                }
+                if(secondHighestValue == "agility")
+                {
+                    titleClass = "the Thief";
+                }
+                if (hasSecondHighest == false)
+                {
+                    titleClass = "the Lucky";
+                }
+            }
+            if(highestValue == "agility")
+            {
+                if(secondHighestValue == "toughness")
+                {
+                    titleClass = "the Fighter";
+                }
+                if(secondHighestValue == "strength")
+                {
+                    titleClass = "the Assassin";
+                }
+                if(secondHighestValue == "luck")
+                {
+                    titleClass = "the Rogue";
+                }
+                if (hasSecondHighest == false)
+                {
+                    titleClass = "the Agile";
+                }
+            }
+            if(hasHighest == false)
+            {
+                if(hasSecondHighest == false)
+                {
+                    titleClass = "the Well Rounded";
+                }
+            }
